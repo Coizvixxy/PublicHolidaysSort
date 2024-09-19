@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2024 Macau Public Holidays</title>
+</head>
+<body>
+    <h1>2024 Macau Public Holidays</h1>
+    <ul>
+        {% for date, date_str, day, name in holidays %}
+            <li>{{ date_str }} ({{ day }}) - {{ name }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
