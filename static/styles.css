@@ -1,0 +1,39 @@
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.month {
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.supplement img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.highlight {
+    border: 2px solid #ff9800; /* Example: orange border */
+    background-color: #fffde7; /* Light yellow background */
+}
+
+body {
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: #469871;
+    text-align:center;
+    text-shadow: 2px 2px #ffffff;
+}
+
+div.month{
+    box-shadow: 5px 10px #469871; /* Horizontal offset, vertical offset, blur radius, color */
+    Height: 260px;
+}
