@@ -2,8 +2,15 @@ from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['Permissions-Policy'] = 'clipboard-write=*'
+    return response
 
 def parse_date(date_str):
     try:
