@@ -195,32 +195,32 @@
     </style>
 </head>
 <body>
-    <h1>{{ page_title }}澳門特別行政區公眾假期 （共{{ holiday_count }}日）</h1>
-    <form method="POST">
-        <input type="text" name="url" placeholder="Enter URL" value="{{ url }}" size="50">
-        <button type="submit">Fetch Holidays</button>
+    <h1>{{ page_title }}澳門特別行政區公眾假期 (共{{ holiday_count }}日)</h1>
+    <form method='POST'>
+        <input type='text' name='url' placeholder='Enter URL' value='{{ url }}' size='50'>
+        <button type='submit'>Fetch Holidays</button>
     </form>
 
-    <input type="month" id="startMonth" name="startMonth">
-    <input type="month" id="endMonth" name="endMonth">
-    <button onclick="highlightMonths()">Highlight Months</button>
+    <input type='month' id='startMonth' name='startMonth'>
+    <input type='month' id='endMonth' name='endMonth'>
+    <button onclick='highlightMonths()'>Highlight Months</button>
 
-    <div class="month-grid">
+    <div class='month-grid'>
         {% for month in range(1, 13) %}
-            <div class="month" id="month-{{ month }}">
+            <div class='month' id='month-{{ month }}'>
                 <h2>{{ month }}月</h2>
                 <ul>
                     {% for date, date_str, day, name in holidays %}
                         {% if date.month == month %}
-                            <li class="{{ 'supplement' if '補假' in name else '' }}">
-                                <span onclick="copyToClipboard(this)" data-clipboard-text="{{ date.strftime('%Y/%m/%d') }}">
+                            <li class='{{ "supplement" if "補假" in name else "" }}'>
+                                <span onclick='copyToClipboard(this)' data-clipboard-text='{{ date.strftime("%Y/%m/%d") }}'>
                                     {{ date_str }} ({{ day }})
                                 </span> -
-                                <span onclick="copyToClipboard(this)" data-clipboard-text="{{ date.strftime('%Y/%m/%d') }} - {{ name }}">
+                                <span onclick='copyToClipboard(this)' data-clipboard-text='{{ date.strftime("%Y/%m/%d") }} - {{ name }}'>
                                     {{ name }}
                                 </span>
                                 {% if '補假' in name %}
-                                    <img src="{{ url_for('static', filename='supplement-icon.png') }}" alt="Supplement">
+                                    <img src='{{ url_for("static", filename="supplement-icon.png") }}' alt='Supplement'>
                                 {% endif %}
                             </li>
                         {% endif %}
