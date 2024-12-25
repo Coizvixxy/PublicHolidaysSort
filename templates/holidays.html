@@ -285,17 +285,33 @@
             const historicalDate = element.getAttribute('data-clipboard-text');
             const correctedDate = historicalDate.replace(/^(\d{4})/, year);
 
-            navigator.clipboard.writeText(correctedDate).then(() => {
-                showAlarm('已復制到剪貼板', 'success');
-                element.style.color = 'green';
-                setTimeout(() => {
-                    element.style.color = '';
-                }, 2000);
-            }).catch(err => {
+            // 创建临时文本区域
+            const textArea = document.createElement('textarea');
+            textArea.value = correctedDate;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            
+            try {
+                textArea.select();
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showAlarm('已復制到剪貼板', 'success');
+                    element.style.color = 'green';
+                } else {
+                    showAlarm('復制失敗', 'error');
+                    element.style.color = 'red';
+                }
+            } catch (err) {
                 console.error('Error copying text: ', err);
                 showAlarm('復制失敗', 'error');
                 element.style.color = 'red';
-            });
+            } finally {
+                document.body.removeChild(textArea);
+                setTimeout(() => {
+                    element.style.color = '';
+                }, 2000);
+            }
         }
 
         function highlightMonths() {
