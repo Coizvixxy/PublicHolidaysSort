@@ -286,14 +286,14 @@
             const correctedDate = historicalDate.replace(/^(\d{4})/, year);
 
             navigator.clipboard.writeText(correctedDate).then(() => {
-                showAlarm('已复制到剪贴板', 'success');
+                showAlarm('已復制到剪貼板', 'success');
                 element.style.color = 'green';
                 setTimeout(() => {
                     element.style.color = '';
                 }, 2000);
             }).catch(err => {
                 console.error('Error copying text: ', err);
-                showAlarm('复制失败', 'error');
+                showAlarm('復制失敗', 'error');
                 element.style.color = 'red';
             });
         }
@@ -303,7 +303,7 @@
             const endMonth = document.getElementById('endMonth').value;
 
             if (!startMonth || !endMonth) {
-                showAlarm('请选择开始和结束月份', 'warning');
+                showAlarm('請選擇開始和結束月份', 'warning');
                 return;
             }
 
@@ -311,7 +311,7 @@
             const end = new Date(endMonth);
 
             if (start > end) {
-                showAlarm('开始月份必须早于结束月份', 'error');
+                showAlarm('開始月份必須早於結束月份', 'error');
                 return;
             }
 
@@ -326,7 +326,7 @@
                 }
             }
 
-            showAlarm('已高亮显示选中月份', 'success');
+            showAlarm('已高亮顯示選中月份', 'success');
         }
     </script>
 </body>
