@@ -3,7 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <title>Public Holidays</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .month {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 12px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .month:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .month.highlighted {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+
+        .month h2 {
+            margin-top: 0;
+            color: #34495e;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .month ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .month li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+            padding: 6px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            font-size: 0.95em;
+        }
+
+        .month li:hover {
+            background-color: #f8f9fa;
+        }
+
+        .supplement {
+            color: #721c24;
+            background-color: #f8d7da;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        form {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        input[type="text"], input[type="month"] {
+            padding: 8px;
+            margin-right: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        span[onclick] {
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        span[onclick]:hover {
+            text-decoration: underline;
+            background-color: #e9ecef;
+        }
+
+        img {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        /* Alarm Modal Styles */
+        .alarm-modal {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            z-index: 1000;
+            min-width: 250px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 0.9em;
+        }
+
+        .alarm-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alarm-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .alarm-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alarm-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alarm-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+        }
+
+        .alarm-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>{{ page_title }}澳門特別行政區公眾假期 （共{{ holiday_count }}日）</h1>
@@ -40,30 +229,105 @@
             </div>
         {% endfor %}
     </div>
+
     <script>
-    function copyToClipboard(element) {
-        const pageTitle = "{{ page_title }}";  // Simulating the page title
-        const year = pageTitle.match(/\d+/)[0];  // This extracts '2024' from '2024年'
-        const historicalDate = element.getAttribute('data-clipboard-text');  // e.g., '1900/02/09'
+        function showAlarm(message, type = 'info', duration = 3000) {
+            const existingAlarm = document.querySelector('.alarm-modal');
+            if (existingAlarm) {
+                existingAlarm.remove();
+            }
 
-        // Assuming you want to replace the year '1900' with '2024'
-        const correctedDate = historicalDate.replace(/^(\d{4})/, year);
+            const alarmModal = document.createElement('div');
+            alarmModal.className = `alarm-modal alarm-${type}`;
 
-        navigator.clipboard.writeText(correctedDate).then(() => {
-            // Change the color of the text to indicate it was copied
-            element.style.color = 'green';
+            const content = document.createElement('div');
+            content.className = 'alarm-content';
 
-            // Optionally, reset the color after a few seconds
+            const icon = document.createElement('span');
+            icon.className = 'alarm-icon';
+            
+            switch (type) {
+                case 'success':
+                    icon.textContent = '✓';
+                    break;
+                case 'error':
+                    icon.textContent = '✕';
+                    break;
+                case 'warning':
+                    icon.textContent = '!';
+                    break;
+                default:
+                    icon.textContent = 'i';
+            }
+
+            const text = document.createElement('span');
+            text.textContent = message;
+            text.style.color = 'black';
+
+            content.appendChild(icon);
+            content.appendChild(text);
+            alarmModal.appendChild(content);
+            document.body.appendChild(alarmModal);
+
+            alarmModal.style.animation = 'slideDown 0.5s ease-out';
+
             setTimeout(() => {
-                element.style.color = '';  // Reset to original color
-            }, 2000);  // Changes back after 2 seconds
-        }).catch(err => {
-            console.error('Error copying text: ', err);
-            // Change text color to red if there was an error
-            element.style.color = 'red';
-        });
-    }
-</script>
-<script src="{{ url_for('static', filename='holidays.js') }}" defer></script>
+                alarmModal.style.animation = 'fadeOut 0.5s ease-out';
+                setTimeout(() => {
+                    alarmModal.remove();
+                }, 500);
+            }, duration);
+        }
+
+        function copyToClipboard(element) {
+            const pageTitle = "{{ page_title }}";
+            const year = pageTitle.match(/\d+/)[0];
+            const historicalDate = element.getAttribute('data-clipboard-text');
+            const correctedDate = historicalDate.replace(/^(\d{4})/, year);
+
+            navigator.clipboard.writeText(correctedDate).then(() => {
+                showAlarm('已复制到剪贴板', 'success');
+                element.style.color = 'green';
+                setTimeout(() => {
+                    element.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error copying text: ', err);
+                showAlarm('复制失败', 'error');
+                element.style.color = 'red';
+            });
+        }
+
+        function highlightMonths() {
+            const startMonth = document.getElementById('startMonth').value;
+            const endMonth = document.getElementById('endMonth').value;
+
+            if (!startMonth || !endMonth) {
+                showAlarm('请选择开始和结束月份', 'warning');
+                return;
+            }
+
+            const start = new Date(startMonth);
+            const end = new Date(endMonth);
+
+            if (start > end) {
+                showAlarm('开始月份必须早于结束月份', 'error');
+                return;
+            }
+
+            document.querySelectorAll('.month').forEach(month => {
+                month.classList.remove('highlighted');
+            });
+
+            for (let month = start.getMonth() + 1; month <= end.getMonth() + 1; month++) {
+                const monthElement = document.getElementById(`month-${month}`);
+                if (monthElement) {
+                    monthElement.classList.add('highlighted');
+                }
+            }
+
+            showAlarm('已高亮显示选中月份', 'success');
+        }
+    </script>
 </body>
 </html>
